@@ -19,3 +19,5 @@ compute_average_rasters.R
 compute_average_season_rasters.R
 seasonal_rasters_analysis.R
 extract_years.R
+calculate_max_daily_distance.R
+daily_distance_analysis.R
