@@ -1,5 +1,5 @@
-load_shapefiles <- function() {
-  shp_folder <- "data/shapefiles"
+load_shapefiles <- function(fold) {
+  shp_folder <- fold
   med_poly <- vect(file.path(shp_folder, "Mediterranean_Sea/Mediterranean_Sea.shp"))
   med_poly$NAME <- "MEDITERRANEAN"
   

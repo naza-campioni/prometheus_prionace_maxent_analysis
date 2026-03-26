@@ -8,7 +8,7 @@ load_packages()
 
 env_path <- "aligned_mean_rasters_2025"
 
-shapefiles <- load_shapefiles()
+shapefiles <- load_shapefiles('data/shapefiles')
 med_poly <- shapefiles$med
 regions <- shapefiles$reg
 regions$med <- med_poly
