@@ -1,58 +1,144 @@
 library(shiny)
+library(bslib)
 library(terra)
 
 source("../R/load_packages.R")
 load_packages()
 source("../R/load_all.R")
-source("../R/load_shapefiles.R")
+# source("../R/load_shapefiles.R")
 
-ui <- fluidPage(
+theme <- bs_theme(
+  version = 5,
+  bootswatch = "flatly",   # clean, neutral
+  primary = "#2C3E50"
+)
+
+ui <- page_sidebar(
+  theme = theme,
   
-  titlePanel("BS_MAXENT App"),
+  title = div(
+    class = "d-flex justify-content-between align-items-center",
+    span("MaxEnt pipeline"),
+    span(class = "badge bg-secondary", textOutput("status"))
+  ),
   
-  sidebarLayout(
+  sidebar = sidebar(
     
-    sidebarPanel(
+    card(
+      card_header("Inputs"),
       
       fileInput("occ", "Upload occurrences CSV", accept = ".csv"),
       
       textInput("env_path", "Env raster folder", value =
                   "../aligned_mean_rasters_2025"),
+    
+    # textInput("shp_path", "Shapefile folder", value = "../data/shapefiles"),
+    
+      textInput("base_folder", "Experiment folder", value = "general"),
+    
+      checkboxGroupInput(
+        "regions_selected",
+        "Select regions",
+        choices = c("Mediterranean", "West", "Central", "East", "Central_east")
+      ),
       
-      textInput("shp_path", "Shapefile folder", value = "../data/shapefiles"),
-      
-      textInput("base_folder", "Base folder", value = "../general"),
-      
-      checkboxGroupInput("partitions", "Partitions",
-                         choices = c("block", "checkerboard",
-                                     "hierarchical_checkerboard"),
-                         selected = c("block", "checkerboard",
-                                      "hierarchical_checkerboard")),
-      
-      checkboxGroupInput("fc", "Feature classes",
-                         choices = c('L','Q','P','LQ','H'),
-                         selected = c('L','Q','P','LQ','H')),
-      
-      sliderInput("rm", "Regularization multiplier",
-                  min = 0.5, max = 5, value = c(1,5), step = 0.5),
-      
-      textInput("year.range", "Year range", value = '2015-2025'),
-      
-      numericInput("bandwidth", "Bandwidth", value = 20000),
-      
-      actionButton("run", "Run pipeline")
-      
+      uiOutput("region_paths"),
     ),
     
-    mainPanel(
-      textOutput("status"),
-      imageOutput("prediction"),
-      downloadButton("download_results", "Download results")
+    accordion(
+      accordion_panel(
+        "Model settings",
+        
+        checkboxGroupInput("partitions", "Partitions",
+                           choices = c("block", "checkerboard",
+                                       "hierarchical_checkerboard"),
+                           selected = c("block", "checkerboard",
+                                       "hierarchical_checkerboard")),
+    
+        checkboxGroupInput("fc", "Feature classes",
+                           choices = c('L','Q','P','LQ','H'),
+                           selected = c('L','Q','P','LQ','H')),
+    
+        sliderInput("rm", "Regularization multiplier",
+                    min = 0.5, max = 5, value = c(1,5), step = 0.5),
+    
+        textInput("year.range", "Year range", value = '2015-2025'),
+    
+        numericInput("bandwidth", "Bandwidth", value = 20000),
+        
+      )
+    ),
+    
+    div(
+      class = "d-grid mt-3",
+      actionButton("run", "Run pipeline", class = "btn-primary")
     )
+  ),
+  
+  card(
+    class = "mt-3",
+    card_header("Predictions"),
+    imageOutput("prediction", height = "500px", width = "600px")
+  ),
+  
+  card(
+    class = "mt-3",
+    card_header("Download"),
+    downloadButton("download_results", "Download results")
   )
 )
+    
+   
+  
+  
 
 server <- function(input, output, session) {
+  
+  # dynamically create textInputs
+  output$region_paths <- renderUI({
+    
+    req(input$regions_selected)
+    
+    tagList(
+      lapply(input$regions_selected, function(reg) {
+        
+        card(
+          class = "mt-2",
+          card_header(reg),
+          
+          textInput(
+            inputId = paste0("path_", reg),
+            label = "Shapefile path"
+          )
+        )
+        
+      })
+    )
+  })
+  
+  # build regions list
+  regions_reactive <- reactive({
+    
+    req(input$regions_selected)
+    
+    regions <- list()
+    
+    for (reg in input$regions_selected) {
+      
+      path <- input[[paste0("path_", reg)]]
+      
+      if (is.null(path) || path == "") next
+      
+      shp <- terra::vect(path)
+      shp$NAME <- toupper(reg)
+      
+      regions[[reg]] <- shp
+    }
+    
+    req(length(regions) > 0)
+    
+    return(regions)
+  })
   
   occ_path <- reactiveVal(NULL)
   result_path <- reactiveVal(NULL)
@@ -68,22 +154,18 @@ server <- function(input, output, session) {
   
   observeEvent(input$run, {
     
-    req(occ_path(), input$env_path, input$shp_path)
+    req(occ_path(), input$env_path, regions_reactive())
     
     withProgress(message = 'Running pipeline', value = 0, {
       
       incProgress(0.1, detail = "Loading occurrences")
       
-      # load env exactly as script
+      # load env as script
       env <- load_env(input$env_path)
       env_polished <- calculate_vif(env)
       env <- env_polished$env
       
       incProgress(0.2, detail = "Loading shapefiles")
-      
-      # load shapefiles exactly as script
-      shapefiles <- load_shapefiles(input$shp_path)
-      med_poly <- shapefiles$med
       
       incProgress(0.3, detail = "Preparing configuration")
       
@@ -98,7 +180,7 @@ server <- function(input, output, session) {
         # data
         occ_file = occ_path(),
         env = env,
-        regions = med_poly,
+        regions = regions_reactive(),
         
         # model settings
         partitions = c(unlist(lapply(input$partitions, function(p) {
