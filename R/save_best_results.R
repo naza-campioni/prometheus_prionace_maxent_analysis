@@ -9,17 +9,20 @@ save_best_results <- function(res.dir, folder) {
   
   best_folder <- lfolds[grepl(best_model, lfolds, fixed = TRUE)][1]
   
-  best_files <- list.files(best_folder)
+  best_files <- list.files(best_folder, full.names = TRUE)
   best_files <- best_files[endsWith(best_files, '.jpg') |
                              endsWith(best_files, '.csv') |
-                             endsWith(best_files, '.rda')]
+                             endsWith(best_files, '.rda') |
+                             endsWith(best_files, '.tif')]
   
-  dir_to_create <- file.path("results", folder)
+  dir_to_create <- file.path(res.dir, folder, "best")
   if (!dir.exists(dir_to_create)) {
     dir.create(dir_to_create, recursive = TRUE)
   }
   
-  file.copy(file.path(best_folder, best_files),
-            file.path(dir_to_create, best_files),
+  file.copy(best_files,
+            file.path(dir_to_create, basename(best_files)),
             overwrite = TRUE)
+  
+  return(dir_to_create)
 }

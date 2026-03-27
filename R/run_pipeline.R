@@ -34,6 +34,7 @@ run_pipeline <- function(config) {
   
   bandwidth <- config$bandwidth
   
+  path <- list()
   
   occ <- prep_occ(occ_file, env)
   
@@ -96,7 +97,7 @@ run_pipeline <- function(config) {
         first.run <- FALSE
         file.remove(logfile)
         
-        for (j in seq_along(1:length(txt))) {
+        for (j in seq_along(txt)) {
           file.remove(file.path(res.dir, folder, txt[j]))
         }
       }
@@ -106,12 +107,16 @@ run_pipeline <- function(config) {
         cat("##################\n")
         cat("Analysing:\n")
         cat("Experiment - ", base_folder, "\n")
-        cat("Bandwidth - ", bandwidth[[bw]], "\n")
+        cat("Bandwidth - ", bandwidth[bw], "\n")
         cat("Region - ", region$NAME[1], "\n")
         cat("Partition - ", partition.folders[[i]], "\n")
         cat("##################\n")
         
-        maxent_calculate(res.dir, year.range = year.range, region, env_, occ_,
+        maxent_calculate(res.dir,
+                         year.range = year.range,
+                         region,
+                         env_,
+                         occ_,
                          folder = folder,
                          partition = partitions[[i]],
                          partition.folder = partition.folders[[i]],
@@ -125,9 +130,10 @@ run_pipeline <- function(config) {
                          bandwidth = bandwidth[bw])
       }
       extract_best_model(res.dir, folder)
-      save_best_results(res.dir, folder)
-      
+      res_path <- save_best_results(res.dir, folder)
+      path[[region$NAME[1]]] <- res_path
     }
     
-    }
+  }
+  return(path)
   }

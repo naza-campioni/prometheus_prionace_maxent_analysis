@@ -184,12 +184,20 @@ maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
   if (!is.null(dev.list())) graphics.off()
   
   # predictions
+  pred <- predict(best_model, env)
+  
+  terra::writeRaster(
+    pred,
+    filename = file.path(save_folder, "predictions.tif"),
+    overwrite = TRUE
+  )
+  
+  
   jpeg(file.path(save_folder, "predictions.jpg"), res = 300, width = 10,
        height = 8, units = "in")
   
-  pred <- predict(best_model, env)
-  plot(pred, main = paste(details$tune.args, "AICc =",
-                          round(details$AICc, digits = 0), "years =",
+  plot(pred, main = paste('Partition: ', partition, 'Details: ', details$tune.args,
+                          "AICc =", round(details$AICc, digits = 0), "years =",
                           year.range, "bw =", bandwidth, sep=" "))
   
   dev.off()
