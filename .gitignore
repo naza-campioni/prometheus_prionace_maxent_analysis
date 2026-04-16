@@ -14,10 +14,10 @@ data/season_data/sumaut_counts.png
 data/season_data/winspr_counts.png
 data/season_data/occ_sumaut.png
 data/season_data/occ_winspr.png
-data/ontogenetic_data/occ_mature_autwin.png
-data/ontogenetic_data/occ_mature_sprsum.png
-data/ontogenetic_data/occ_young_autwin.png
-data/ontogenetic_data/occ_young_sprsum.png
+data/ontogenetic_data/occ_mature_autwin.jpg
+data/ontogenetic_data/occ_mature_sprsum.jpg
+data/ontogenetic_data/occ_young_autwin.jpg
+data/ontogenetic_data/occ_young_sprsum.jpg
 
 experiments/
 aligned_mean_rasters_2025/
