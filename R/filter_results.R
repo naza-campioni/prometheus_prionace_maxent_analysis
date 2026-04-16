@@ -4,7 +4,7 @@ filter_results <- function(e.mx, save_folder, res.dir, folder, partition.folder)
   res <- e.mx@results
   
   # 1) AUC diff
-  keep1 <- (res$auc.train - res$auc.val.avg) <= 0.095
+  keep1 <- res$auc.diff.avg <= 0.1
   idx <- which(keep1)
   res <- res[idx, ]
   

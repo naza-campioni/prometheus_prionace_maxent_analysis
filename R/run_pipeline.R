@@ -33,6 +33,7 @@ run_pipeline <- function(config) {
   parallel <- config$parallel
   
   bandwidth <- config$bandwidth
+  n.bg <- config$n.bg
   
   path <- list()
   
@@ -89,7 +90,7 @@ run_pipeline <- function(config) {
         folder <- file.path(base_folder, region$NAME[1])
       }
       
-      # check if csv file already exists before first run to remove them
+      # check if csv file already exists before first run to remove it
       logfile <- file.path(res.dir, folder, "selected_models.csv")
       
       if (first.run & file.exists(logfile)) {
@@ -123,6 +124,7 @@ run_pipeline <- function(config) {
                          a.g = ag[[i]],
                          algorithm = 'maxent.jar',
                          bg = bg_,
+                         n.bg = n.bg,
                          fc = fc,
                          rm = rm,
                          thin = thin,

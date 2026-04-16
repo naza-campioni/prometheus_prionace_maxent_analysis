@@ -8,7 +8,7 @@ load_packages()
 
 env_path <- "aligned_mean_rasters_2025"
 
-shapefiles <- load_shapefiles()
+shapefiles <- load_shapefiles('data/shapefiles')
 med_poly <- shapefiles$med
 regions <- shapefiles$reg
 regions$med <- med_poly
@@ -27,14 +27,14 @@ config <- list(
   # data
   occ_file = "",
   env = env,
-  regions = regions,
+  regions = med_poly,
   
   # model settings
   partitions = c("block", "checkerboard", "checkerboard"),
   partition.folders = c("block", "checkerboard", "hierarchical_checkerboard"),
   ag = list(NULL, 10, c(10,10)),
   
-  fc = c('L','Q','P','LQ','H'),
+  fc = c('L','Q','P','H','LQ','LP','QP','QH','LQP','LQH'),
   rm = seq(1,5,0.5),
   
   # metadata
@@ -43,7 +43,8 @@ config <- list(
   parallel = FALSE,
   
   # bias
-  bandwidth = c(20000)
+  bandwidth = c(20000),
+  n.bg = NULL
 )
 
 name_files <- list('data/sex_data/sex_m.csv', 'data/sex_data/sex_f.csv')
@@ -53,5 +54,6 @@ for (i in seq_along(name_files)) {
   config$occ_file <- name_files[[i]]
   config$base_folder <- folders[[i]]
   
-  run_pipeline(config)
+  best_path <- run_pipeline(config)
+  copy_best("results", config$base_folder, config$regions$NAME, best_path[[1]])
 }

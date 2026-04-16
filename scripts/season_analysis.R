@@ -9,7 +9,7 @@ load_packages()
 env_path <- list("aligned_mean_season_rasters_2025/WINSPR",
                  "aligned_mean_season_rasters_2025/SUMAUT")
 
-shapefiles <- load_shapefiles()
+shapefiles <- load_shapefiles('data/shapefiles')
 med_poly <- shapefiles$med
 regions <- shapefiles$reg
 regions$med <- med_poly
@@ -25,15 +25,15 @@ config <- list(
   
   # data
   occ_file = "",
-  env = env,
-  regions = regions,
+  # env = env,
+  regions = med_poly,
   
   # model settings
   partitions = c("block", "checkerboard", "checkerboard"),
   partition.folders = c("block", "checkerboard", "hierarchical_checkerboard"),
   ag = list(NULL, 10, c(10,10)),
   
-  fc = c('L','Q','P','LQ','H'),
+  fc = c('L','Q','P','H','LQ','LP','QP','QH','LQP','LQH'),
   rm = seq(1,5,0.5),
   
   # metadata
@@ -42,7 +42,8 @@ config <- list(
   parallel = FALSE,
   
   # bias
-  bandwidth = c(20000)
+  bandwidth = c(20000),
+  n.bg = NULL
 )
 
 for (i in seq_along(name_files)) {
@@ -52,8 +53,16 @@ for (i in seq_along(name_files)) {
   env.vif <- env_polished$vif
   env.rem <- env_polished$rem
   
+  if (!("chl" %in% env.rem)) {
+    env <- env[[names(env) != "chl"]]
+  }
+  
+  cat("file:", name_files[[i]], 'env: ', names(env))
+  
+  config$env <- env
   config$occ_file <- name_files[[i]]
   config$base_folder <- folders[[i]]
   
-  run_pipeline(config)
+  best_path <- run_pipeline(config)
+  copy_best("results", config$base_folder, config$regions$NAME, best_path[[1]])
 }

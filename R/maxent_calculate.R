@@ -1,6 +1,6 @@
 maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
                              partition.folder, partition, a.g = NULL, algorithm,
-                             bg, fc, rm, parallel = FALSE, thin = FALSE,
+                             bg, n.bg, fc, rm, parallel = FALSE, thin = FALSE,
                              numCores = 6, bandwidth) {
   
   # environmental thinning (not used after correct bias creation)
@@ -16,6 +16,8 @@ maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
     dir.create(save_folder, recursive = TRUE, showWarnings = FALSE)
   }
   
+  
+  if (!is.null(bg)) {
   # plot partitioned background and inter-partition env similarity
   if (partition == 'block') {
     block <- get.block(occ, bg, orientation = "lat_lon")
@@ -77,7 +79,7 @@ maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
   } else {
     # jackknife
   }
-  
+  }
   # check maxent_outputs folder
   outdir <- file.path(save_folder, "maxent_outputs")
   
@@ -94,6 +96,7 @@ maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
     e.mx <- ENMevaluate(occs = occ,
                         envs = env,
                         bg = bg, 
+                        n.bg = n.bg,
                         algorithm = algorithm,
                         partitions = partition, 
                         partition.settings = list(aggregation.factor = a.g),
@@ -196,9 +199,9 @@ maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
   jpeg(file.path(save_folder, "predictions.jpg"), res = 300, width = 10,
        height = 8, units = "in")
   
-  plot(pred, main = paste('Partition: ', partition, 'Details: ', details$tune.args,
-                          "AICc =", round(details$AICc, digits = 0), "years =",
-                          year.range, "bw =", bandwidth, sep=" "))
+  plot(pred, main = paste('Partition: ', partition, ', Details: ', details$tune.args,
+                          ", AICc =", round(details$AICc, digits = 0), ", years =",
+                          year.range, sep=" "))#"bw =", bandwidth,
   
   dev.off()
   
