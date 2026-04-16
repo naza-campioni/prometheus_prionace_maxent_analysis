@@ -3,6 +3,18 @@
 .Rhistory
 
 data/shapefiles
+data/yearly_counts.png
+data/maturity_data/maturity_counts.png
+data/maturity_data/occ_adult.png
+data/maturity_data/occ_juvenile.png
+data/sex_data/sex_counts.png
+data/sex_data/occ_female.png
+data/sex_data/occ_male.png
+data/season_data/sumaut_counts.png
+data/season_data/winspr_counts.png
+data/season_data/occ_sumaut.png
+data/season_data/occ_winspr.png
+
 experiments/
 aligned_mean_rasters_2025/
 aligned_mean_season_rasters_2025/
@@ -18,6 +30,5 @@ align_season_mean_rasters.R
 compute_average_rasters.R
 compute_average_season_rasters.R
 seasonal_rasters_analysis.R
-extract_years.R
 calculate_max_daily_distance.R
 daily_distance_analysis.R
