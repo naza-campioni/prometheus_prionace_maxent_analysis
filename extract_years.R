@@ -7,6 +7,7 @@ setwd(wd)
 
 library(readxl)
 library(ggplot2)
+library(terra)
 
 med <- "data/shapefiles/Mediterranean_Sea\\Mediterranean_Sea.shp"
 med_poly <- vect(med)
@@ -228,3 +229,104 @@ df <- data[, c(11,10,9)]
 names(df) <- c('species', 'dd long', 'dd lat')
 
 write.csv(df, output.name, row.names = FALSE)
+
+
+# SEASON AND MATURITY
+seasmat_df <- data[((!is.na(data$`LIFE STAGE`)) & (!is.na(data$SEASON))), ]
+seasmat_df <- seasmat_df[, c(11,10,9,5,17)]
+names(seasmat_df) <- c('species', 'dd long', 'dd lat', 'season', 'maturity')
+
+seasmat_df$season <- ifelse(
+  seasmat_df$season %in% c("Spr", "Sum"),
+  "SprSum",
+  "AutWin"
+)
+
+seasmat_df$group <- paste(seasmat_df$maturity, seasmat_df$season, sep = "_")
+
+counts <- table(seasmat_df$group)
+
+barplot(counts,
+        col = "grey70",
+        border = "black",
+        ylab = "Number of records")
+
+aw <- seasmat_df[seasmat_df$season == 'AutWin'& seasmat_df$maturity == 'Adult',]
+outfile <- file.path("data/ontogenetic_data",
+                     paste0("occ_mature_autwin", ".jpg"))
+
+jpeg(outfile, width = 1600, height = 1600, res = 300)
+
+plot(med_poly, main = "Occurrences - mature, autwin")
+
+points(aw$`dd long`,
+       aw$`dd lat`,
+       col = "red",
+       pch = 4,      # cross symbol
+       cex = 1.2,
+       lwd = 1.5)
+
+dev.off()
+
+as <- seasmat_df[seasmat_df$season == 'SprSum'& seasmat_df$maturity == 'Adult',]
+outfile <- file.path("data/ontogenetic_data",
+                     paste0("occ_mature_sprsum", ".jpg"))
+
+jpeg(outfile, width = 1600, height = 1600, res = 300)
+
+plot(med_poly, main = "Occurrences - mature, sprsum")
+
+points(as$`dd long`,
+       as$`dd lat`,
+       col = "red",
+       pch = 4,      # cross symbol
+       cex = 1.2,
+       lwd = 1.5)
+
+dev.off()
+
+
+jw <- seasmat_df[seasmat_df$season == 'AutWin'&
+                   seasmat_df$maturity == 'Juvenile',]
+outfile <- file.path("data/ontogenetic_data",
+                     paste0("occ_young_autwin", ".jpg"))
+
+jpeg(outfile, width = 1600, height = 1600, res = 300)
+
+plot(med_poly, main = "Occurrences - juvenile, autwin")
+
+points(jw$`dd long`,
+       jw$`dd lat`,
+       col = "red",
+       pch = 4,      # cross symbol
+       cex = 1.2,
+       lwd = 1.5)
+
+dev.off()
+
+
+js <- seasmat_df[seasmat_df$season == 'SprSum'&
+                   seasmat_df$maturity == 'Juvenile',]
+outfile <- file.path("data/ontogenetic_data",
+                     paste0("occ_young_sprsum", ".jpg"))
+
+jpeg(outfile, width = 1600, height = 1600, res = 300)
+
+plot(med_poly, main = "Occurrences - juvenile, sprsum")
+
+points(js$`dd long`,
+       js$`dd lat`,
+       col = "red",
+       pch = 4,      # cross symbol
+       cex = 1.2,
+       lwd = 1.5)
+
+dev.off()
+
+
+
+write.csv(aw, "data/ontogenetic_data/aw.csv", row.names = FALSE)
+write.csv(as, "data/ontogenetic_data/as.csv", row.names = FALSE)
+write.csv(jw, "data/ontogenetic_data/jw.csv", row.names = FALSE)
+write.csv(js, "data/ontogenetic_data/js.csv", row.names = FALSE)
+
