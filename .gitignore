@@ -22,8 +22,11 @@ ENV_2025/
 mean_rasters_2025/
 mean_rasters_season_2025/
 data_noSPAT/
+results/
+
 env_corrplot.png
-occ_CE.png
+
+occ_CE.csv
 
 bs_maxent_main.R
 align_mean_rasters.R
