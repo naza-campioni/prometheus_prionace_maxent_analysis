@@ -21,11 +21,7 @@ prep_occ <- function(file_name, env) {
   
   # remove NA values from our environmental variable rasters
   occs.z <- terra::extract(env, occ, ID = FALSE)
-  occs.na <- which(rowSums(is.na(occs.z)) > 0)
-  occ <- occ[-occs.na, ]
-  
-  # or also:
-  # occ <- occ[complete.cases(occs.z), ]
+  occ <- occ[complete.cases(occs.z), ]
   
   return(occ)
   

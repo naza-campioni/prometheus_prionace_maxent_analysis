@@ -1,7 +1,7 @@
 maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
                              partition.folder, partition, a.g = NULL, algorithm,
                              bg, n.bg, fc, rm, parallel = FALSE, thin = FALSE,
-                             numCores = 6, bandwidth) {
+                             numCores = 6, bandwidth, pred.type) {
   
   # environmental thinning (not used after correct bias creation)
   if (isTRUE(thin) & (nrow(occ) >= 100)) {
@@ -104,7 +104,8 @@ maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
                           fc = fc,
                           rm = rm),
                         other.settings = list(
-                          path = file.path(save_folder,"maxent_outputs")),
+                          path = file.path(save_folder,"maxent_outputs"),
+                          pred.type = pred.type),
                         parallel = parallel,
                         numCores = numCores)
     
@@ -119,7 +120,8 @@ maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
                           fc = fc,
                           rm = rm),
                         other.settings = list(
-                          path = file.path(save_folder,"maxent_outputs")),
+                          path = file.path(save_folder,"maxent_outputs"),
+                          pred.type = pred.type),
                         parallel = parallel,
                         numCores = numCores)
     
@@ -187,7 +189,7 @@ maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
   if (!is.null(dev.list())) graphics.off()
   
   # predictions
-  pred <- predict(best_model, env)
+  pred <- predict(best_model, env, args = paste("outputformat=", pred.type, sep=''))
   
   terra::writeRaster(
     pred,
@@ -201,7 +203,7 @@ maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
   
   plot(pred, main = paste('Partition: ', partition, ', Details: ', details$tune.args,
                           ", AICc =", round(details$AICc, digits = 0), ", years =",
-                          year.range, sep=" "))#"bw =", bandwidth,
+                          year.range, "pred type: ", pred.type, sep=" "))
   
   dev.off()
   
@@ -233,5 +235,21 @@ maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
   
   if (!is.null(dev.list())) graphics.off()
   
+  # null model
+  mod.null <- ENMnulls(e.mx, mod.settings = list(fc = details$fc, rm = details$rm),
+                       no.iter = 100)
   
-}
+  jpeg(file.path(save_folder,"null_test.jpg"), res = 300, width = 16,
+       height = 16, units = "cm")
+  
+  p <- evalplot.nulls(mod.null, stats = c("auc.train","auc.val", "auc.diff",
+                                          "or.10p"),
+                      plot.type = "histogram") +
+    ggplot2::ggtitle("Null model test")
+  
+  print(p)
+  
+  dev.off()
+  if (!is.null(dev.list())) graphics.off()
+
+  }

@@ -35,6 +35,8 @@ run_pipeline <- function(config) {
   bandwidth <- config$bandwidth
   n.bg <- config$n.bg
   
+  pred.type <- config$pred.type
+  
   path <- list()
   
   occ <- prep_occ(occ_file, env)
@@ -129,7 +131,8 @@ run_pipeline <- function(config) {
                          rm = rm,
                          thin = thin,
                          parallel = parallel,
-                         bandwidth = bandwidth[bw])
+                         bandwidth = bandwidth[bw],
+                         pred.type = pred.type)
       }
       extract_best_model(res.dir, folder)
       res_path <- save_best_results(res.dir, folder)

@@ -10,21 +10,21 @@ env_path <- list("aligned_mean_ontogeny_rasters_2025/autwin",
                  "aligned_mean_ontogeny_rasters_2025/sprsum",
                  "aligned_mean_ontogeny_rasters_2025/autwin",
                  "aligned_mean_ontogeny_rasters_2025/sprsum"
-                 )
+)
 
 shapefiles <- load_shapefiles('data/shapefiles')
 med_poly <- shapefiles$med
 regions <- shapefiles$reg
 regions$med <- med_poly
 
-name_files <- list('data/ontogenetic_data/aw.csv',
-                   'data/ontogenetic_data/as.csv',
-                   'data/ontogenetic_data/jw.csv',
-                   'data/ontogenetic_data/js.csv')
-folders <- list("season_ontogeny/adult_autwin",
-                "season_ontogeny/adult_sprsum",
-                "season_ontogeny/juvenile_autwin",
-                "season_ontogeny/juvenile_sprsum")
+name_files <- list('data/sexseason_data/mw.csv',
+                   'data/sexseason_data/ms.csv',
+                   'data/sexseason_data/fw.csv',
+                   'data/sexseason_data/fs.csv')
+folders <- list("season_sex/male_autwin",
+                "season_sex/male_sprsum",
+                "season_sex/female_autwin",
+                "season_sex/female_sprsum")
 
 config <- list(
   # paths
@@ -55,18 +55,14 @@ config <- list(
 )
 
 for (i in seq_along(name_files)) {
-  env_full <- load_env(env_path[[i]])
-  env_polished <- calculate_vif(env_full)
+  env <- load_env(env_path[[i]])
+  env_polished <- calculate_vif(env)
   env <- env_polished$env
   env.vif <- env_polished$vif
   env.rem <- env_polished$rem
   
   if (!("chl" %in% env.rem)) {
     env <- env[[names(env) != "chl"]]
-  }
-  
-  if ('nppv' %in% env.rem) {
-    env <- c(env, env_full[['nppv']])
   }
   
   cat("file:", name_files[[i]], 'env: ', names(env))

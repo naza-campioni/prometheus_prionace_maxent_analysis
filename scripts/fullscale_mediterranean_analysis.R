@@ -12,11 +12,15 @@ shapefiles <- load_shapefiles('data/shapefiles')
 med_poly <- shapefiles$med
 regions <- shapefiles$reg
 
-env <- load_env(env_path)
-env_polished <- calculate_vif(env)
+env_full <- load_env(env_path)
+env_polished <- calculate_vif(env_full)
 env <- env_polished$env
 env.vif <- env_polished$vif
 env.rem <- env_polished$rem
+
+if (!("chl" %in% env.rem)) {
+  env <- env[[names(env) != "chl"]]
+}
 
 config <- list(
   # paths
@@ -43,7 +47,10 @@ config <- list(
   
   # bias
   bandwidth = c(20000),
-  n.bg = NULL
+  n.bg = NULL,
+  
+  # prediction type
+  pred.type = 'logistic'
 )
 
 best_path <- run_pipeline(config)

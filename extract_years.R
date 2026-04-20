@@ -330,3 +330,104 @@ write.csv(as, "data/ontogenetic_data/as.csv", row.names = FALSE)
 write.csv(jw, "data/ontogenetic_data/jw.csv", row.names = FALSE)
 write.csv(js, "data/ontogenetic_data/js.csv", row.names = FALSE)
 
+
+# SEASON AND SEX
+seasex_df <- data[((!is.na(data$`SEX`)) & (!is.na(data$SEASON))), ]
+seasex_df <- seasex_df[seasex_df$SEX != 'N.A.', ]
+seasex_df <- seasex_df[, c(11,10,9,5,16)]
+names(seasex_df) <- c('species', 'dd long', 'dd lat', 'season', 'sex')
+
+seasex_df$season <- ifelse(
+  seasex_df$season %in% c("Spr", "Sum"),
+  "SprSum",
+  "AutWin"
+)
+
+seasex_df$group <- paste(seasex_df$sex, seasex_df$season, sep = "_")
+
+counts <- table(seasex_df$group)
+
+barplot(counts,
+        col = "grey70",
+        border = "black",
+        ylab = "Number of records")
+
+mw <- seasex_df[seasex_df$season == 'AutWin'& seasex_df$sex == 'M',]
+outfile <- file.path("data/sexseason_data",
+                     paste0("occ_male_autwin", ".jpg"))
+
+jpeg(outfile, width = 1600, height = 1600, res = 300)
+
+plot(med_poly, main = "Occurrences - male, autwin")
+
+points(mw$`dd long`,
+       mw$`dd lat`,
+       col = "red",
+       pch = 4,      # cross symbol
+       cex = 1.2,
+       lwd = 1.5)
+
+dev.off()
+
+ms <- seasex_df[seasex_df$season == 'SprSum'& seasex_df$sex == 'M',]
+outfile <- file.path("data/sexseason_data",
+                     paste0("occ_male_sprsum", ".jpg"))
+
+jpeg(outfile, width = 1600, height = 1600, res = 300)
+
+plot(med_poly, main = "Occurrences - male, sprsum")
+
+points(ms$`dd long`,
+       ms$`dd lat`,
+       col = "red",
+       pch = 4,      # cross symbol
+       cex = 1.2,
+       lwd = 1.5)
+
+dev.off()
+
+
+fw <- seasex_df[seasex_df$season == 'AutWin'&
+                  seasex_df$sex == 'F',]
+outfile <- file.path("data/sexseason_data",
+                     paste0("occ_female_autwin", ".jpg"))
+
+jpeg(outfile, width = 1600, height = 1600, res = 300)
+
+plot(med_poly, main = "Occurrences - female, autwin")
+
+points(fw$`dd long`,
+       fw$`dd lat`,
+       col = "red",
+       pch = 4,      # cross symbol
+       cex = 1.2,
+       lwd = 1.5)
+
+dev.off()
+
+
+fs <- seasex_df[seasex_df$season == 'SprSum'&
+                  seasex_df$sex == 'F',]
+outfile <- file.path("data/sexseason_data",
+                     paste0("occ_female_sprsum", ".jpg"))
+
+jpeg(outfile, width = 1600, height = 1600, res = 300)
+
+
+
+points(fs$`dd long`,
+       fs$`dd lat`,
+       col = "red",
+       pch = 4,      # cross symbol
+       cex = 1.2,
+       lwd = 1.5)
+
+dev.off()
+
+
+
+write.csv(mw, "data/sexseason_data/mw.csv", row.names = FALSE)
+write.csv(ms, "data/sexseason_data/ms.csv", row.names = FALSE)
+write.csv(fw, "data/sexseason_data/fw.csv", row.names = FALSE)
+write.csv(fs, "data/sexseason_data/fs.csv", row.names = FALSE)
+
