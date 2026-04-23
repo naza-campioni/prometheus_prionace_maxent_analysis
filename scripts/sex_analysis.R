@@ -13,11 +13,15 @@ med_poly <- shapefiles$med
 regions <- shapefiles$reg
 regions$med <- med_poly
 
-env <- load_env(env_path)
-env_polished <- calculate_vif(env)
+env_full <- load_env(env_path)
+env_polished <- calculate_vif(env_full)
 env <- env_polished$env
 env.vif <- env_polished$vif
 env.rem <- env_polished$rem
+
+if (!("chl" %in% env.rem)) {
+  env <- env[[names(env) != "chl"]]
+}
 
 config <- list(
   # paths
@@ -34,7 +38,7 @@ config <- list(
   partition.folders = c("block", "checkerboard", "hierarchical_checkerboard"),
   ag = list(NULL, 10, c(10,10)),
   
-  fc = c('L','Q','P','H','LQ','LP','QP','QH','LQP','LQH'),
+  fc = c('L','Q','H','P','LQ','LH','LP','QH','QP','HP','LQH','LQP','QHP','LQHP'),
   rm = seq(1,5,0.5),
   
   # metadata
@@ -43,8 +47,11 @@ config <- list(
   parallel = FALSE,
   
   # bias
-  bandwidth = c(20000),
-  n.bg = NULL
+  bandwidth = c(45000),
+  n.bg = NULL,
+  
+  # prediction type
+  pred.type = 'cloglog'
 )
 
 name_files <- list('data/sex_data/sex_m.csv', 'data/sex_data/sex_f.csv')

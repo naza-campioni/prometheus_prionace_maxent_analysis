@@ -6,11 +6,10 @@ source(here("R/load_all.R"))
 
 load_packages()
 
-env_path <- list("aligned_mean_ontogeny_rasters_2025/autwin",
-                 "aligned_mean_ontogeny_rasters_2025/sprsum",
-                 "aligned_mean_ontogeny_rasters_2025/autwin",
-                 "aligned_mean_ontogeny_rasters_2025/sprsum"
-)
+env_path <- env_path <- list("aligned_mean_season_rasters_2025/WINSPR",
+                             "aligned_mean_season_rasters_2025/SUMAUT",
+                             "aligned_mean_season_rasters_2025/WINSPR",
+                             "aligned_mean_season_rasters_2025/SUMAUT")
 
 shapefiles <- load_shapefiles('data/shapefiles')
 med_poly <- shapefiles$med
@@ -21,10 +20,10 @@ name_files <- list('data/sexseason_data/mw.csv',
                    'data/sexseason_data/ms.csv',
                    'data/sexseason_data/fw.csv',
                    'data/sexseason_data/fs.csv')
-folders <- list("season_sex/male_autwin",
-                "season_sex/male_sprsum",
-                "season_sex/female_autwin",
-                "season_sex/female_sprsum")
+folders <- list("season_sex/male_winspr",
+                "season_sex/male_sumaut",
+                "season_sex/female_winspr",
+                "season_sex/female_sumaut")
 
 config <- list(
   # paths
@@ -41,7 +40,7 @@ config <- list(
   partition.folders = c("block", "checkerboard", "hierarchical_checkerboard"),
   ag = list(NULL, 10, c(10,10)),
   
-  fc = c('L','Q','P','H','LQ','LP','QP','QH','LQP','LQH'),
+  fc = c('L','Q','H','P','LQ','LH','LP','QH','QP','HP','LQH','LQP','QHP','LQHP'),
   rm = seq(1,5,0.5),
   
   # metadata
@@ -50,19 +49,26 @@ config <- list(
   parallel = FALSE,
   
   # bias
-  bandwidth = c(20000),
-  n.bg = NULL
+  bandwidth = c(45000),
+  n.bg = NULL,
+  
+  # prediction type
+  pred.type = 'cloglog'
 )
 
 for (i in seq_along(name_files)) {
-  env <- load_env(env_path[[i]])
-  env_polished <- calculate_vif(env)
+  env_full <- load_env(env_path[[i]])
+  env_polished <- calculate_vif(env_full)
   env <- env_polished$env
   env.vif <- env_polished$vif
   env.rem <- env_polished$rem
   
   if (!("chl" %in% env.rem)) {
     env <- env[[names(env) != "chl"]]
+  }
+  
+  if ('nppv' %in% env.rem) {
+    env <- c(env, env_full[['nppv']])
   }
   
   cat("file:", name_files[[i]], 'env: ', names(env))

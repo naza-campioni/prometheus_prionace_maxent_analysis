@@ -37,7 +37,7 @@ config <- list(
   partition.folders = c("block", "checkerboard", "hierarchical_checkerboard"),
   ag = list(NULL, 10, c(10,10)),
   
-  fc = c('L','Q','P','H','LQ','LP','QP','QH','LQP','LQH'),
+  fc = c('L','Q','H','P','LQ','LH','LP','QH','QP','HP','LQH','LQP','QHP','LQHP'),
   rm = seq(1,5,0.5),
   
   # metadata
@@ -46,11 +46,11 @@ config <- list(
   parallel = FALSE,
   
   # bias
-  bandwidth = c(20000),
+  bandwidth = c(45000),
   n.bg = NULL,
   
   # prediction type
-  pred.type = 'logistic'
+  pred.type = 'cloglog'
 )
 
 best_path <- run_pipeline(config)

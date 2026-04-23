@@ -237,9 +237,9 @@ seasmat_df <- seasmat_df[, c(11,10,9,5,17)]
 names(seasmat_df) <- c('species', 'dd long', 'dd lat', 'season', 'maturity')
 
 seasmat_df$season <- ifelse(
-  seasmat_df$season %in% c("Spr", "Sum"),
-  "SprSum",
-  "AutWin"
+  seasmat_df$season %in% c("Win", "Spr"),
+  "WinSpr",
+  "SumAut"
 )
 
 seasmat_df$group <- paste(seasmat_df$maturity, seasmat_df$season, sep = "_")
@@ -251,13 +251,13 @@ barplot(counts,
         border = "black",
         ylab = "Number of records")
 
-aw <- seasmat_df[seasmat_df$season == 'AutWin'& seasmat_df$maturity == 'Adult',]
+aw <- seasmat_df[seasmat_df$season == 'WinSpr'& seasmat_df$maturity == 'Adult',]
 outfile <- file.path("data/ontogenetic_data",
-                     paste0("occ_mature_autwin", ".jpg"))
+                     paste0("occ_mature_winspr", ".jpg"))
 
 jpeg(outfile, width = 1600, height = 1600, res = 300)
 
-plot(med_poly, main = "Occurrences - mature, autwin")
+plot(med_poly, main = "Occurrences - mature, winspr")
 
 points(aw$`dd long`,
        aw$`dd lat`,
@@ -268,13 +268,13 @@ points(aw$`dd long`,
 
 dev.off()
 
-as <- seasmat_df[seasmat_df$season == 'SprSum'& seasmat_df$maturity == 'Adult',]
+as <- seasmat_df[seasmat_df$season == 'SumAut'& seasmat_df$maturity == 'Adult',]
 outfile <- file.path("data/ontogenetic_data",
-                     paste0("occ_mature_sprsum", ".jpg"))
+                     paste0("occ_mature_sumaut", ".jpg"))
 
 jpeg(outfile, width = 1600, height = 1600, res = 300)
 
-plot(med_poly, main = "Occurrences - mature, sprsum")
+plot(med_poly, main = "Occurrences - mature, sumaut")
 
 points(as$`dd long`,
        as$`dd lat`,
@@ -286,14 +286,14 @@ points(as$`dd long`,
 dev.off()
 
 
-jw <- seasmat_df[seasmat_df$season == 'AutWin'&
+jw <- seasmat_df[seasmat_df$season == 'WinSpr'&
                    seasmat_df$maturity == 'Juvenile',]
 outfile <- file.path("data/ontogenetic_data",
-                     paste0("occ_young_autwin", ".jpg"))
+                     paste0("occ_young_winspr", ".jpg"))
 
 jpeg(outfile, width = 1600, height = 1600, res = 300)
 
-plot(med_poly, main = "Occurrences - juvenile, autwin")
+plot(med_poly, main = "Occurrences - juvenile, winspr")
 
 points(jw$`dd long`,
        jw$`dd lat`,
@@ -305,14 +305,14 @@ points(jw$`dd long`,
 dev.off()
 
 
-js <- seasmat_df[seasmat_df$season == 'SprSum'&
+js <- seasmat_df[seasmat_df$season == 'SumAut'&
                    seasmat_df$maturity == 'Juvenile',]
 outfile <- file.path("data/ontogenetic_data",
-                     paste0("occ_young_sprsum", ".jpg"))
+                     paste0("occ_young_sumaut", ".jpg"))
 
 jpeg(outfile, width = 1600, height = 1600, res = 300)
 
-plot(med_poly, main = "Occurrences - juvenile, sprsum")
+plot(med_poly, main = "Occurrences - juvenile, sumaut")
 
 points(js$`dd long`,
        js$`dd lat`,
@@ -338,9 +338,9 @@ seasex_df <- seasex_df[, c(11,10,9,5,16)]
 names(seasex_df) <- c('species', 'dd long', 'dd lat', 'season', 'sex')
 
 seasex_df$season <- ifelse(
-  seasex_df$season %in% c("Spr", "Sum"),
-  "SprSum",
-  "AutWin"
+  seasex_df$season %in% c("Win", "Spr"),
+  "WinSpr",
+  "SumAut"
 )
 
 seasex_df$group <- paste(seasex_df$sex, seasex_df$season, sep = "_")
@@ -352,13 +352,13 @@ barplot(counts,
         border = "black",
         ylab = "Number of records")
 
-mw <- seasex_df[seasex_df$season == 'AutWin'& seasex_df$sex == 'M',]
+mw <- seasex_df[seasex_df$season == 'WinSpr'& seasex_df$sex == 'M',]
 outfile <- file.path("data/sexseason_data",
-                     paste0("occ_male_autwin", ".jpg"))
+                     paste0("occ_male_winspr", ".jpg"))
 
 jpeg(outfile, width = 1600, height = 1600, res = 300)
 
-plot(med_poly, main = "Occurrences - male, autwin")
+plot(med_poly, main = "Occurrences - male, winspr")
 
 points(mw$`dd long`,
        mw$`dd lat`,
@@ -369,13 +369,13 @@ points(mw$`dd long`,
 
 dev.off()
 
-ms <- seasex_df[seasex_df$season == 'SprSum'& seasex_df$sex == 'M',]
+ms <- seasex_df[seasex_df$season == 'SumAut'& seasex_df$sex == 'M',]
 outfile <- file.path("data/sexseason_data",
-                     paste0("occ_male_sprsum", ".jpg"))
+                     paste0("occ_male_sumaut", ".jpg"))
 
 jpeg(outfile, width = 1600, height = 1600, res = 300)
 
-plot(med_poly, main = "Occurrences - male, sprsum")
+plot(med_poly, main = "Occurrences - male, sumaut")
 
 points(ms$`dd long`,
        ms$`dd lat`,
@@ -387,14 +387,14 @@ points(ms$`dd long`,
 dev.off()
 
 
-fw <- seasex_df[seasex_df$season == 'AutWin'&
+fw <- seasex_df[seasex_df$season == 'WinSpr'&
                   seasex_df$sex == 'F',]
 outfile <- file.path("data/sexseason_data",
-                     paste0("occ_female_autwin", ".jpg"))
+                     paste0("occ_female_winspr", ".jpg"))
 
 jpeg(outfile, width = 1600, height = 1600, res = 300)
 
-plot(med_poly, main = "Occurrences - female, autwin")
+plot(med_poly, main = "Occurrences - female, winspr")
 
 points(fw$`dd long`,
        fw$`dd lat`,
@@ -406,14 +406,14 @@ points(fw$`dd long`,
 dev.off()
 
 
-fs <- seasex_df[seasex_df$season == 'SprSum'&
+fs <- seasex_df[seasex_df$season == 'SumAut'&
                   seasex_df$sex == 'F',]
 outfile <- file.path("data/sexseason_data",
-                     paste0("occ_female_sprsum", ".jpg"))
+                     paste0("occ_female_sumaut", ".jpg"))
 
 jpeg(outfile, width = 1600, height = 1600, res = 300)
 
-
+plot(med_poly, main = "Occurrences - female, sumaut")
 
 points(fs$`dd long`,
        fs$`dd lat`,

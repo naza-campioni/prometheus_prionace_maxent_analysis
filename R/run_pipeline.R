@@ -42,7 +42,8 @@ run_pipeline <- function(config) {
   occ <- prep_occ(occ_file, env)
   
   for (bw in seq_along(bandwidth)) {
-    vectors <- create_bias(occ, env, bandwidth[bw])
+    vectors <- create_bias(occ = occ, env = env, regions = regions,
+                           bandwidth = bandwidth[bw])
     bg <- vectors[[1]]
     occ_vect <- vectors[[2]]
     bg_vect <- vectors[[3]]

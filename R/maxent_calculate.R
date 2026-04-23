@@ -201,9 +201,10 @@ maxent_calculate <- function(res.dir, year.range, med_poly, env, occ, folder,
   jpeg(file.path(save_folder, "predictions.jpg"), res = 300, width = 10,
        height = 8, units = "in")
   
-  plot(pred, main = paste('Partition: ', partition, ', Details: ', details$tune.args,
-                          ", AICc =", round(details$AICc, digits = 0), ", years =",
-                          year.range, "pred type: ", pred.type, sep=" "))
+  plot(pred, main = paste('P: ', partition, ', Details: ', details$tune.args,
+                          ", AICc =", round(details$AICc, digits = 0), ", AUC_test: ",
+                          details$auc.val.avg, ", years =",
+                          year.range, ", pred type: ", pred.type, sep=" "))
   
   dev.off()
   

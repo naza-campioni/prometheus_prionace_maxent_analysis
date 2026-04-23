@@ -37,7 +37,7 @@ partitions = 'checkerboard'
 partition.folders = 'checkerboard'
 
 ag = 10
-fc = c('L','Q','P','H','LQ','LP','QP','QH','LQP','LQH')
+fc = c('L','Q','H','P','LQ','LH','LP','QH','QP','HP','LQH','LQP','QHP')
 rm = seq(1,5,0.5)
 
 year.range = "2015_2025"
@@ -46,7 +46,11 @@ thin = FALSE
 parallel = FALSE
 bandwidth = 'uniform_sampling'
 
+# prediction type
+pred.type = 'logistic'
+
 
 maxent_calculate(res.dir = res.dir, year.range, med_poly = region, env, occ_, folder,
                  partition.folders, partitions, a.g = ag, algorithm = 'maxent.jar',
-                 bg = NULL, n.bg = 10000, fc = fc, rm = rm, bandwidth = bandwidth)
+                 bg = NULL, n.bg = 10000, fc = fc, rm = rm, bandwidth = bandwidth,
+                 pred.type = pred.type)
