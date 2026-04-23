@@ -1,4 +1,4 @@
-create_bias <- function(occ, env, bandwidth) {
+create_bias <- function(occ, env, regions, bandwidth) {
   #' Generate a sampling bias surface and biased background points
   #'
   #' This function creates a spatial bias surface based on occurrence data and
@@ -51,7 +51,10 @@ create_bias <- function(occ, env, bandwidth) {
   occ_proj <- project(occ_vect, "EPSG:3035") # Euclidean for Gaussian filter
   env_proj <- project(env, "EPSG:3035")
   
-  occ_ras <- rasterize(occ_proj, env_proj, field = 1, background = NA)
+  reg_proj <- project(regions, "EPSG:3035")
+  env_proj <- mask(env_proj, reg_proj)
+  
+  occ_ras <- rasterize(occ_proj, env_proj, field = 1, background = 0)
   
   bias <- focal(occ_ras,
                 w = focalMat(occ_ras, d = bandwidth, type = "Gauss"),
@@ -61,6 +64,9 @@ create_bias <- function(occ, env, bandwidth) {
   
   env_mask <- !is.na(sum(env_proj))   # remove bg where env is na
   bias <- mask(bias, env_mask) 
+  
+  # ensure correct spatial region
+  bias <- mask(bias, reg_proj)
   
   bg_spat <- terra::spatSample(bias,
                                size = 10000,
